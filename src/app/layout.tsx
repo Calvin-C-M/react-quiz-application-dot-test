@@ -21,7 +21,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${roboto.variable}`}>{children}</body>
+      <body className={`font-sans ${roboto.variable}`}>
+        <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 gap-10 text-neutral">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
