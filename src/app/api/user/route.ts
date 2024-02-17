@@ -1,6 +1,4 @@
-import { authOptions } from "@/server/auth"
 import { getDatabase } from "@/server/database"
-import { getServerSession } from "next-auth"
 
 interface SignUpForm {
     username: string,

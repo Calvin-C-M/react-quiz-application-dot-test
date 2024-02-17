@@ -21,7 +21,7 @@ interface APIResp {
 }
 
 export default function QuizPage() {
-    const quizTime = 0.1
+    const quizTime = 1
     const [loadingPage, setLoadingPage] = useState<boolean>(true)
     const [currentPage, setCurrentPage] = useState<number>(0)
     const [quizData, setQuizData] = useState<Array<Quiz>>([])
@@ -34,42 +34,43 @@ export default function QuizPage() {
 
     useEffect(() => {
         const timer = setInterval(() => {
-          setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
-        }, 1000)
-    
-        axios.get<APIResp>("https://opentdb.com/api.php?amount=10&category=18")
-            .then(res => {
-                const resData = res.data
-                const quiz = resData.results
-
-                quiz.map((data) => {
-                    data.possible_answer = data.incorrect_answers
-                    data.possible_answer.push(data.correct_answer)
-                    data.possible_answer.sort(() => Math.random() - 0.5)
-                })
-
-                setQuizData(quiz)
-
-                setScore({
-                    correct_answer: 0,
-                    wrong_answer: 0,
-                    unanswered: quiz.length
-                })
-
-                setLoadingPage(false)
-            })
-            .catch(err => {
-                console.error(err)
-            })
-            
-            if(timeLeft == 0) {
-                setInterval(() => {
-                    setTimeLeft(0)
-                }, 0)
+          setTimeLeft((prevTimeLeft) => {
+            if(prevTimeLeft === 1) {
                 setCurrentPage(quizData.length)
+                return prevTimeLeft
+            } else {
+                return prevTimeLeft - 1
             }
-            return () => clearInterval(timer)
-    }, [timeLeft, quizData.length])
+          })
+        }, 1000)
+
+        axios.get<APIResp>("https://opentdb.com/api.php?amount=10&category=18")
+        .then(res => {
+            const resData = res.data
+            const quiz = resData.results
+    
+            quiz.map((data) => {
+                data.possible_answer = data.incorrect_answers
+                data.possible_answer.push(data.correct_answer)
+                data.possible_answer.sort(() => Math.random() - 0.5)
+            })
+    
+            setQuizData(quiz)
+    
+            setScore({
+                correct_answer: 0,
+                wrong_answer: 0,
+                unanswered: quiz.length
+            })
+    
+            setLoadingPage(false)
+        })
+        .catch(err => {
+            console.error(err)
+        })
+            
+        return () => clearInterval(timer)
+    }, [quizData])
 
     const nextPage = () => {
         setCurrentPage(currentPage + 1)
@@ -157,5 +158,3 @@ export default function QuizPage() {
         )
     }
 }
-
-
