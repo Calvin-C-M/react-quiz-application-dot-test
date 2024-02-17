@@ -21,7 +21,7 @@ interface APIResp {
 }
 
 export default function QuizPage() {
-    const quizTime = 15
+    const quizTime = 0.1
     const [loadingPage, setLoadingPage] = useState<boolean>(true)
     const [currentPage, setCurrentPage] = useState<number>(0)
     const [quizData, setQuizData] = useState<Array<Quiz>>([])
@@ -61,9 +61,15 @@ export default function QuizPage() {
             .catch(err => {
                 console.error(err)
             })
-
+            
+            if(timeLeft == 0) {
+                setInterval(() => {
+                    setTimeLeft(0)
+                }, 0)
+                setCurrentPage(15)
+            }
             return () => clearInterval(timer)
-    }, [])
+    }, [timeLeft])
 
     const nextPage = () => {
         setCurrentPage(currentPage + 1)
