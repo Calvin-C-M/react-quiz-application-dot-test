@@ -1,37 +1,80 @@
+"use client"
+
+import Button from "@/components/Button";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useState } from "react";
+
+interface Response {
+  status: ("SUCCESS" | "FAILED"),
+  data: any
+}
 
 export default function HomePage() {
+  const router = useRouter()
+  const [form, setForm] = useState({
+    username: "",
+    password: ""
+  })
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const submitHandler = (e: FormEvent) => {
+    e.preventDefault()
+
+    axios.post("/api/login", form)
+      .then(res => {
+        console.log(res)
+        const data = res.data as Response
+
+        if(data.status == "SUCCESS") {
+          router.push("/quiz")
+        } else {
+          alert("Login salah")
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        alert("Ada kesalahan pada server")
+      })
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
-        </div>
-      </div>
+    <main>
+      <section className="bg-primary text-neutral rounded-md p-5">
+        <h1 className="text-3xl font-bold text-center">Login Form</h1>
+        <form onSubmit={submitHandler} className="flex flex-col gap-5 mt-3">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="username" className="font-bold">Username</label>
+            <input 
+              id="username"
+              type="text"
+              name="username"
+              className="rounded-sm text-primary px-2 py-1 focus:outline-secondary"
+              onChange={handleChange}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="password" className="font-bold">Password</label>
+            <input 
+              id="password"
+              type="password" 
+              name="password"
+              className="rounded-sm text-primary px-2 py-1 focus:outline-secondary"
+              onChange={handleChange}
+            />
+          </div>
+          <Button className="w-full">
+            Login
+          </Button>
+          <span>
+            Don&apos;t have an account? Sign Up <Link href="/sign-up" className="text-tertiery hover:underline">here</Link>
+          </span>
+        </form>
+      </section>
     </main>
   );
 }

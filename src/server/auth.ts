@@ -3,7 +3,7 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 import { env } from "@/env";
 
@@ -16,7 +16,9 @@ import { env } from "@/env";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string;
+      id: string
+      username: string,
+      password: string
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -44,10 +46,29 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials, req) {
+        const res = await fetch(process.env.PATHNAME + "/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: credentials?.username,
+                password: credentials?.password
+            })
+        })
+        const user = await res.json() as { username: string, password: string }
+
+        if(user) return user
+        return null
+      }
+    })
     /**
      * ...add more providers here.
      *

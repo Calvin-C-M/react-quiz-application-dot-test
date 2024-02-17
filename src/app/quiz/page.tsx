@@ -66,10 +66,10 @@ export default function QuizPage() {
                 setInterval(() => {
                     setTimeLeft(0)
                 }, 0)
-                setCurrentPage(15)
+                setCurrentPage(quizData.length)
             }
             return () => clearInterval(timer)
-    }, [timeLeft])
+    }, [timeLeft, quizData.length])
 
     const nextPage = () => {
         setCurrentPage(currentPage + 1)
@@ -95,7 +95,7 @@ export default function QuizPage() {
     if(loadingPage) {
         return (
             <>
-            <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 gap-10 text-neutral font-bold">
+            <main className="flex flex-col justify-center items-center gap-10 font-bold">
                 <section className="relative flex items-center justify-center animate-spin">
                     <div className="absolute w-10 h-10 bg-tertiery rounded-full" />
                     <div className="absolute w-5 h-5 bg-neutral rounded-full" />
@@ -117,7 +117,7 @@ export default function QuizPage() {
 
             return (
                 <>
-                <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-neutral">
+                <main>
                     <section className="bg-primary w-[512px] p-5 rounded-md flex flex-col gap-3">
                         <section className="flex items-center justify-between">
                             <span className="w-fit px-2 py-1 font-bold bg-neutral text-primary">{currentPage+1} / {quizData.length}</span>
@@ -142,7 +142,7 @@ export default function QuizPage() {
         } 
         return (
             <>
-            <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-neutral">
+            <main>
                 <section className="bg-primary rounded-md p-5 flex flex-col gap-3">
                     <h1 className="text-4xl font-bold text-center">{(score.correct_answer / quizData.length) * 100}%</h1>
                     <p>Correct Answer: {score.correct_answer}</p>
